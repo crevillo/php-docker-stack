@@ -1,0 +1,68 @@
+version: '3'
+services:
+  front1:
+    build:
+      context: images/nginx
+    restart: always
+    volumes:
+      - "./projects/$PROJECT/nginx:/etc/nginx/conf.d"
+      - ./$PROJECT:/var/www/html
+
+  varnish:
+    build:
+      context: images/varnish
+    restart: always
+    environment:
+      - VARNISH_PORT=6081
+    volumes:
+      - "./projects/$PROJECT/varnish/default.vcl:/etc/varnish/default.vcl"
+
+  back1:
+    build:
+      context: images/back
+      args:
+        user: $USER
+    environment:
+      - SYMFONY_ENV=dev
+      - SYMFONY_TRUSTED_PROXIES=172.22.0.0/16
+    volumes:
+      - ./$PROJECT:/var/www/html
+
+  mysql:
+    build:
+      context: images/mysql
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootdev
+    ports:
+      - $MYSQL_PORT:3306
+
+  redis:
+    build:
+      context: images/redis
+
+  memcache:
+    build:
+      context: images/memcache
+
+  haproxy:
+    build:
+      context: images/haproxy
+    ports:
+      - $HAPROXY_PORT:443
+
+  mailcatcher:
+    build:
+      context: images/mailcatcher
+    ports:
+      - $MAILCATCHER_PORT:1080
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    restart: always
+    ports:
+      - $PHPMYADMIN_PORT:80
+    environment:
+      - PMA_HOST=mysql
+    links:
+      - mysql
