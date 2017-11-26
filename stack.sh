@@ -1,10 +1,16 @@
 #!/usr/bin/env bash
 
+if [ -f "docker-compose.yml" ]; then
+    rm docker-compose.yml
+fi
+
 DOCKER_COMPOSE=${DOCKER_COMPOSE:=docker-compose}
 
 DOCKER_COMPOSE_FILE=${COMPOSE_FILE:=docker-compose.yml}
 
 DOCKER_COMPOSE_CONFIG_FILE=${DOCKER_COMPOSE_CONFIG_FILE:=docker-compose.config.sh}
+
+COMPOSE_ENV=all
 
 red=$'\e[1;31m'
 grn=$'\e[1;32m'
@@ -14,21 +20,22 @@ mag=$'\e[1;35m'
 cyn=$'\e[1;36m'
 end=$'\e[0m'
 
-# copy template yml file to final docker-compose-template.yml file
+# copy template yml file to final docker-compose-template-all.yml file
 buildDockerComposeFile() {
     if [ ! -f "$DOCKER_COMPOSE_FILE" ]; then
 
         #choose which template should be used for project
 
         #docker_compose_template_type=${docker_compose_template_type:-nginx}
-        template_file="docker-compose-template.yml"
+        template_file="docker-compose-template-$COMPOSE_ENV.yml"
 
         #if [ ! -f "$template_file" ]; then
         #    echo "ERROR: wrong template file specified. Aborting ..."
         #    exit 1;
         #fi
 
-        echo "No $DOCKER_COMPOSE_FILE found, copying $template_file ..."
+        echo "Generando composer file ..."
+        echo $template_file
         cp "$template_file" "$DOCKER_COMPOSE_FILE"
     fi
 }
@@ -44,6 +51,20 @@ chooseProject() {
         case "$REPLY" in
 
         [1-2] ) PROJECT_NAME=$opt; break;;
+        *) echo "Invalid option. Try another one.";continue;;
+
+        esac
+ln -s -f
+    done
+
+    PS3="[?] ¿Qué entorno(s) quieres levantar? "
+    envs=("dev" "pro" "all")
+    select opt in "${envs[@]}"; do
+
+        case "$REPLY" in
+
+        [1-2] ) COMPOSE_ENV=$opt; break;;
+        3 ) COMPOSE_ENV=$opt; break;;
         *) echo "Invalid option. Try another one.";continue;;
 
         esac
@@ -77,13 +98,6 @@ case "$1" in
         cloneFromGithubIfNeeded
         $DOCKER_COMPOSE -p "$PROJECT" stop
         $DOCKER_COMPOSE -p "$PROJECT" up
-
-        printf "\n\n---\n${grn}Cool! We have it!\n";
-        printf "Access the site using the server name and the %s port \n" $HAPROXY_PORT
-        printf "Mailcatcher is accessible at http://localhost:%s \n" $MAILCATCHER_PORT
-        printf "PhpMyAdmin at http://localhost:%s \n" $PHPMYADMIN_PORT
-        printf "You can access MySQL console at port %s \n---\n\n${end}" $MYSQL_PORT
-
         rm -rf images/back/tmp
     ;;
 

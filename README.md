@@ -13,6 +13,8 @@ Para arrancar tu entorno dirígite a la carpeta donde hayas clonado este reposit
 y ejecuta `./stack.sh start`. El script te dara a elegir los proyectos
 con los que puedes trabajar. La primera ejecución llevará su tiempo pues 
 tendrá que ejecutar todos los procesos de instalación de esas máquinas. 
+También te preguntará si sólo quieres montar un entorno para desarrollar (menos cachés), un entorno para simular 
+pro o ambos. 
 
 ## Imágenes
 Actualmente, el sistema monta las siguientes imágenes, las cuáles se usan
