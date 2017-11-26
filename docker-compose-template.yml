@@ -22,9 +22,8 @@ services:
       context: images/back
       args:
         user: $USER
-    environment:
-      - SYMFONY_ENV=dev
-      - SYMFONY_TRUSTED_PROXIES=172.22.0.0/16
+    env_file:
+      - ./projects/$PROJECT/vars.env
     volumes:
       - ./$PROJECT:/var/www/html
 
@@ -66,3 +65,22 @@ services:
       - PMA_HOST=mysql
     links:
       - mysql
+
+  front_dev:
+    build:
+      context: images/nginx
+    ports:
+      - $DEV_PORT:80
+    volumes:
+      - "./projects/$PROJECT/dev:/etc/nginx/conf.d"
+      - ./$PROJECT:/var/www/html
+
+  back_dev:
+    build:
+      context: images/back
+      args:
+        user: $USER
+    env_file:
+      - ./projects/$PROJECT/vars.dev.env
+    volumes:
+      - ./$PROJECT:/var/www/html

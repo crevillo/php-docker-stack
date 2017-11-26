@@ -87,8 +87,15 @@ case "$1" in
         rm -rf images/back/tmp
     ;;
 
-    recreate)
-        $DOCKER_COMPOSE -p "$PROJECT" up --build
+    build)
+        echo "${red}!Cuidado! Con esto perderás todo lo que tengas en las bases de datos.${end}"
+        select yn in "Yes" "No"; do
+            case $yn in
+                Yes ) $DOCKER_COMPOSE -p "$PROJECT" up --build; break;;
+                No ) exit;;
+            esac
+        done
+
         rm -rf images/back/tmp
 
     ;;

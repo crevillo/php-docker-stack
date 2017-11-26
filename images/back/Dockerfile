@@ -1,8 +1,6 @@
 FROM php:7.1-fpm
 MAINTAINER The Cocktail <ruby@the-cocktail.com>
 
-ADD ./test.php /var/www/html/test.php
-
 RUN apt-get update -qq && apt-get install libicu-dev -y
 RUN apt-get install libssl-dev -y
 RUN apt-get install libpng12-dev -y
@@ -42,6 +40,9 @@ RUN echo "extension=memcached.so" > /usr/local/etc/php/conf.d/memcached.ini
 
 RUN pecl install redis
 RUN echo "extension=redis.so" > /usr/local/etc/php/conf.d/redis.ini
+
+RUN pecl install xdebug
+RUN echo "zend_extension=xdebug.so" > /usr/local/etc/php/conf.d/xdebug.ini
 
 ARG user
 
