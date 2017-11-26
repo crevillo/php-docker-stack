@@ -1,3 +1,4 @@
+# MailCatcher
   mailcatcher:
     build:
       context: images/mailcatcher

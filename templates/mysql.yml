@@ -1,0 +1,9 @@
+# MYSQL
+  mysql:
+    build:
+      context: images/mysql/##MYSQL_VERSION##
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootdev
+    ports:
+      - $MYSQL_PORT:3306

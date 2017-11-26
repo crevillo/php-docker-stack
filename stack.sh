@@ -6,7 +6,7 @@ DOCKER_COMPOSE_FILE=${COMPOSE_FILE:=docker-compose.yml}
 
 DOCKER_COMPOSE_CONFIG_FILE=${DOCKER_COMPOSE_CONFIG_FILE:=docker-compose.config.sh}
 
-COMPOSE_ENV=all
+MYSQL_VERSION=5.7
 
 red=$'\e[1;31m'
 grn=$'\e[1;32m'
@@ -16,24 +16,52 @@ mag=$'\e[1;35m'
 cyn=$'\e[1;36m'
 end=$'\e[0m'
 
-# copy template yml file to final docker-compose-template-all.yml file
+# copy template yml file to final docker-compose-template.yml file
 buildDockerComposeFile() {
-    if [ ! -f "$DOCKER_COMPOSE_FILE" ]; then
 
-        #choose which template should be used for project
+   template_file="docker-compose-template.yml"
 
-        #docker_compose_template_type=${docker_compose_template_type:-nginx}
-        template_file="docker-compose-template-$COMPOSE_ENV.yml"
+   echo "Generando composer file ..."
+   cp "$template_file" "$DOCKER_COMPOSE_FILE"
 
-        #if [ ! -f "$template_file" ]; then
-        #    echo "ERROR: wrong template file specified. Aborting ..."
-        #    exit 1;
-        #fi
+   configureMysql
 
-        echo "Generando composer file ..."
-        cp "$template_file" "$DOCKER_COMPOSE_FILE"
+}
 
-    fi
+configureMysql() {
+    mysql_version=0
+    while [ $mysql_version = 0 ]
+    do
+        options=($(ls images/mysql))
+        options_imploded=''
+        nversions=${#options[@]}
+        for version in "${!options[@]}"
+        do
+            version_name=${options[$version]}
+            if [ $version_name = $MYSQL_VERSION ]; then
+                version_name=($(echo $version_name | sed -e 's/^/\[/'))
+                version_name=($(echo $version_name | sed -e 's/$/\]/'))
+            fi
+            options_imploded=${options_imploded}${version_name}
+            if [ $version -lt $((nversions-1)) ]; then
+                options_imploded=${options_imploded}", "
+            fi
+        done
+
+        read -p "[?] ¿Qué mysql necesitas? $options_imploded: " mysql_version
+        mysql_version=${mysql_version:-$MYSQL_VERSION}
+        echo $mysql_version
+        if [ ! -d "images/mysql/$mysql_version" ]; then
+            echo "No tenemos esa imagen"
+            mysql_version=0
+        fi
+    done
+
+
+
+    mysql_template=$( cat templates/mysql.yml )
+    mysql_service=${mysql_template/\#\#MYSQL_VERSION\#\#/$mysql_version}
+    echo "$mysql_service" >> $DOCKER_COMPOSE_FILE
 }
 
 
@@ -42,42 +70,28 @@ chooseProject() {
 
     options=($(ls projects))
     PS3="[?] ¿Con qué proyecto necesitas trabajar? "
+    nprojects=${#options[@]}
     select opt in "${options[@]}"; do
 
         case "$REPLY" in
 
-        [1-2] ) PROJECT_NAME=$opt; break;;
+        [1-$nprojects] ) PROJECT_NAME=$opt; break;;
         *) echo "Invalid option. Try another one.";continue;;
 
         esac
-ln -s -f
-    done
-
-    PS3="[?] ¿Qué entorno(s) quieres levantar? "
-    envs=("dev" "pro" "all")
-    select opt in "${envs[@]}"; do
-
-        case "$REPLY" in
-
-        [1-2] ) COMPOSE_ENV=$opt; break;;
-        3 ) COMPOSE_ENV=$opt; break;;
-        *) echo "Invalid option. Try another one.";continue;;
-
-        esac
-ln -s -f
     done
 }
 
 selectAddOns() {
-    templates=($(ls templates))
-    for template in "${templates[@]}"
+    addons=($(ls addons))
+    for addon in "${addons[@]}"
     do
-        addon=${template/.yml/}
+        addon=${addon/.yml/}
         read -p "¿Quieres añadir $addon? [s/n]" -n 1 -r
         echo    # (optional) move to a new line
         if [[ $REPLY =~ ^[Ss]$ ]]
         then
-            cat templates/$template >> $DOCKER_COMPOSE_FILE
+            cat addons/$addon.yml >> $DOCKER_COMPOSE_FILE
         fi
     done
 }
