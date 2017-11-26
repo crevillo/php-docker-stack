@@ -26,6 +26,8 @@ services:
       - ./projects/$PROJECT/vars.env
     volumes:
       - ./$PROJECT:/var/www/html
+    ports:
+      - $XDEBUG_PORT:9009
 
   mysql:
     build:

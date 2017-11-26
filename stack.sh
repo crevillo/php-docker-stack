@@ -1,9 +1,5 @@
 #!/usr/bin/env bash
 
-if [ -f "docker-compose.yml" ]; then
-    rm docker-compose.yml
-fi
-
 DOCKER_COMPOSE=${DOCKER_COMPOSE:=docker-compose}
 
 DOCKER_COMPOSE_FILE=${COMPOSE_FILE:=docker-compose.yml}
@@ -92,9 +88,6 @@ mkdir images/back/tmp
 cp projects/$PROJECT_NAME/back/init.sh images/back/tmp/init.sh
 
 source projects/$PROJECT_NAME/docker.env.local
-buildDockerComposeFile
-selectAddOns
-
 
 cloneFromGithubIfNeeded() {
     if [ ! -d "$PROJECT" ]; then
@@ -108,23 +101,26 @@ cloneFromGithubIfNeeded() {
 
 case "$1" in
     start|run)
+        if [ ! -f "$DOCKER_COMPOSE_FILE" ]; then
+        buildDockerComposeFile
+        selectAddOns
+        fi
         cloneFromGithubIfNeeded
         $DOCKER_COMPOSE -p "$PROJECT" stop
         $DOCKER_COMPOSE -p "$PROJECT" up
         rm -rf images/back/tmp
     ;;
 
-    build)
-        echo "${red}!Cuidado! Con esto perderás todo lo que tengas en las bases de datos.${end}"
-        select yn in "Yes" "No"; do
-            case $yn in
-                Yes ) $DOCKER_COMPOSE -p "$PROJECT" up --build; break;;
-                No ) exit;;
-            esac
-        done
-
+    rebuild)
+        $DOCKER_COMPOSE -p "$PROJECT" down
+        if [ -f "docker-compose.yml" ]; then
+            rm docker-compose.yml
+        fi
+        buildDockerComposeFile
+        selectAddOns
+        cloneFromGithubIfNeeded
+        $DOCKER_COMPOSE -p "$PROJECT" up --build
         rm -rf images/back/tmp
-
     ;;
     stop)
         $DOCKER_COMPOSE -p "$PROJECT" down

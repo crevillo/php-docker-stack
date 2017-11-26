@@ -27,3 +27,5 @@ services:
       - ./projects/$PROJECT/vars.dev.env
     volumes:
       - ./$PROJECT:/var/www/html
+    ports:
+      - $XDEBUG_DEV_PORT:9009
