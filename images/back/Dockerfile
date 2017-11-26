@@ -43,6 +43,11 @@ RUN echo "extension=redis.so" > /usr/local/etc/php/conf.d/redis.ini
 
 RUN pecl install xdebug
 RUN echo "zend_extension=xdebug.so" > /usr/local/etc/php/conf.d/xdebug.ini
+RUN echo "xdebug.remote_enable=1"  > /usr/local/etc/php/conf.d/xdebug.ini
+RUN echo "xdebug.remote_host=\"localhost\""  > /usr/local/etc/php/conf.d/xdebug.ini
+RUN echo "xdebug.remote_handler=dbgp" > /usr/local/etc/php/conf.d/xdebug.ini
+RUN echo "xdebug.remote_port=9009"  > /usr/local/etc/php/conf.d/xdebug.ini
+RUN echo "xdebug.remote_autostart=1" > /usr/local/etc/php/conf.d/xdebug.ini
 
 ARG user
 

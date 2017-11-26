@@ -9,30 +9,6 @@ services:
     ports:
       - $MYSQL_PORT:3306
 
-  redis:
-    build:
-      context: images/redis
-
-  memcache:
-    build:
-      context: images/memcache
-
-  mailcatcher:
-    build:
-      context: images/mailcatcher
-    ports:
-      - $MAILCATCHER_PORT:1080
-
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin
-    restart: always
-    ports:
-      - $PHPMYADMIN_PORT:80
-    environment:
-      - PMA_HOST=mysql
-    links:
-      - mysql
-
   front_dev:
     build:
       context: images/nginx
