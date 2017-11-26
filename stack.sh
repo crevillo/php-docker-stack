@@ -35,8 +35,8 @@ buildDockerComposeFile() {
         #fi
 
         echo "Generando composer file ..."
-        echo $template_file
         cp "$template_file" "$DOCKER_COMPOSE_FILE"
+
     fi
 }
 
@@ -72,6 +72,19 @@ ln -s -f
     done
 }
 
+selectAddOns() {
+    templates=($(ls templates))
+    for template in "${templates[@]}"
+    do
+        addon=${template/.yml/}
+        read -p "¿Quieres añadir $addon? [s/n]" -n 1 -r
+        echo    # (optional) move to a new line
+        if [[ $REPLY =~ ^[Ss]$ ]]
+        then
+            cat templates/$template >> $DOCKER_COMPOSE_FILE
+        fi
+    done
+}
 
 chooseProject
 
@@ -80,7 +93,7 @@ cp projects/$PROJECT_NAME/back/init.sh images/back/tmp/init.sh
 
 source projects/$PROJECT_NAME/docker.env.local
 buildDockerComposeFile
-
+selectAddOns
 
 
 cloneFromGithubIfNeeded() {

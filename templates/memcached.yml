@@ -1,0 +1,3 @@
+  memcache:
+    build:
+      context: images/memcache

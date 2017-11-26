@@ -1,0 +1,5 @@
+  mailcatcher:
+    build:
+      context: images/mailcatcher
+    ports:
+      - $MAILCATCHER_PORT:1080
