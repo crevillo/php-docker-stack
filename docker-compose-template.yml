@@ -29,15 +29,6 @@ services:
     ports:
       - $XDEBUG_PORT:9009
 
-  mysql:
-    build:
-      context: images/mysql
-    restart: always
-    environment:
-      - MYSQL_ROOT_PASSWORD=rootdev
-    ports:
-      - $MYSQL_PORT:3306
-
   haproxy:
     build:
       context: images/haproxy
