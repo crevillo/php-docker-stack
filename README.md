@@ -29,16 +29,20 @@ tener en cuenta otros frameworks...
 | back1  | php-fpm 7.1  | pro  |
 | varnish  | varnish  | pro  |
 | mysql | mysql:5.7 | dev,pro |
-| memcache | memcached | dev,pro |
-| redis | redis | dev,pro |
-| haproxy  | haproxy | pro |
-| mailcather | mailcatcher | dev,pro |
-| phpmyadmin | phpmyadmin | dev,pro |
 | front_dev_1 | nginx | dev |
 | back_dev_1 | nginx | dev |
 
-La intención en próximas versiones es dividir esto en pequeñas partes configurables y en las que podamos
-elegir distintas versiones de software según necesitemos.
+# Addons
+A la hora de montar tu entorno el sistema te preguntará si quieres añadir más funcionalidades. De momento te preguntará
+si quieres añadir las siguientes opciones
+
+* memcache
+* redis
+* mailcatcher
+* phpmyadmin
+
+Podrás elegir sí o no a cada una de ellas. 
+
 
 ## Configuración
 
