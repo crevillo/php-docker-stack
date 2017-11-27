@@ -69,6 +69,9 @@ En este script puedes generar archivos que te falten para echar a andar tu proye
 que consideres oportuno. Ten en cuenta que este script se ejecutará cada vez que inicies tu entorno, por tanto, seguramente quieras
 que las cosas no se vuelvan a hacer si ya estaban hechas de antes. :). 
 
+Por ejemplo, en el proyecto  `ez` le decimos que genere los archivos de parámetros sólo si no están ya antes en tu disco. Además, 
+cargamos la base de datos inicial solo si esa base de datos no estaba ya presente. 
+
 Este archivo es copiado a la imagen que se va a arrancar. La razón de hacer esto es porque desde docker no podíamos copiar a la imagen 
 archivos que están fuera de su contexto. (Se puede pero tiene más implicaciones). 
 
