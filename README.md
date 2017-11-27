@@ -63,6 +63,15 @@ la idea es que tengamos un archivo `init.sh` que ejecutaremos siempre que inciem
 típicos pueden ser el composer install o el crear las bases de datos si así lo necesitamos. cada proyecto
 puede proveer el suyo
 
+#### El archivo `projects/[proyecto]/back/init.sh`
+Cada proyecto puede añadir un archivo `init.sh` en su configuración para back, que normalmente será donde se "cocine" todo. 
+En este script puedes generar archivos que te falten para echar a andar tu proyecto, cargar la base de datos inicial o cualquier cosa
+que consideres oportuno. Ten en cuenta que este script se ejecutará cada vez que inicies tu entorno, por tanto, seguramente quieras
+que las cosas no se vuelvan a hacer si ya estaban hechas de antes. :). 
+
+Este archivo es copiado a la imagen que se va a arrancar. La razón de hacer esto es porque desde docker no podíamos copiar a la imagen 
+archivos que están fuera de su contexto. (Se puede pero tiene más implicaciones). 
+
 ### db
 Por confirmar cómo hacemos esto. Quizás podríamos usarla para usar dumps de versiones en producción y trabajar con ellas...
 
