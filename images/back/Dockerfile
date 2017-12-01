@@ -59,10 +59,18 @@ RUN sed -rie "s|user = www-data|user = $user|g" /usr/local/etc/php-fpm.d/www.con
     echo "php_admin_value[session.save_handler]=memcached" >> /usr/local/etc/php-fpm.d/www.conf && \
     echo "php_admin_value[session.save_path]=memcache:11211" >> /usr/local/etc/php-fpm.d/www.conf
 
+RUN curl -sL https://deb.nodesource.com/setup_6.x | bash -
+RUN apt-get install -y nodejs
+
 RUN apt-get install wget git mysql-client telnet -y
+
+RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
+RUN "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
+RUN npm install -g yarn
 
 ADD ./install-composer.sh /var/install/
 ADD ./tmp/init.sh /var/install/
+ADD ./tmp/db.sql.gz /var/install/
 
 RUN ["chmod", "+x", "/var/install/install-composer.sh"]
 RUN ["chmod", "+x", "/var/install/init.sh"]

@@ -98,8 +98,15 @@ selectAddOns() {
 
 chooseProject
 
-mkdir images/back/tmp
+if [ ! -d images/back/tmp ]; then
+    mkdir images/back/tmp
+fi
+
 cp projects/$PROJECT_NAME/back/init.sh images/back/tmp/init.sh
+
+if [ -f "projects/$PROJECT_NAME/db/db.sql.gz" ]; then
+   cp projects/$PROJECT_NAME/db/db.sql.gz images/back/tmp/db.sql.gz
+fi
 
 source projects/$PROJECT_NAME/docker.env.local
 
