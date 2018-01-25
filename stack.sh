@@ -57,29 +57,9 @@ configureMysql() {
         fi
     done
 
-
-
     mysql_template=$( cat templates/mysql.yml )
     mysql_service=${mysql_template/\#\#MYSQL_VERSION\#\#/$mysql_version}
     echo "$mysql_service" >> $DOCKER_COMPOSE_FILE
-}
-
-
-chooseProject() {
-    echo "Generando fichero de configuración ...";
-
-    options=($(ls projects))
-    PS3="[?] ¿Con qué proyecto necesitas trabajar? "
-    nprojects=${#options[@]}
-    select opt in "${options[@]}"; do
-
-        case "$REPLY" in
-
-        [1-$nprojects] ) PROJECT_NAME=$opt; break;;
-        *) echo "Invalid option. Try another one.";continue;;
-
-        esac
-    done
 }
 
 selectAddOns() {
@@ -96,55 +76,14 @@ selectAddOns() {
     done
 }
 
-chooseProject
-
-if [ ! -d images/back/tmp ]; then
-    mkdir images/back/tmp
-fi
-
-cp projects/$PROJECT_NAME/back/init.sh images/back/tmp/init.sh
-
-if [ -f "projects/$PROJECT_NAME/db/db.sql.gz" ]; then
-   cp projects/$PROJECT_NAME/db/db.sql.gz images/back/tmp/db.sql.gz
-fi
-
-source projects/$PROJECT_NAME/docker.env.local
-
-cloneFromGithubIfNeeded() {
-    if [ ! -d "$PROJECT" ]; then
-        if [ ! -z "$GITHUB_TAG" ]; then
-            git clone --branch $GITHUB_TAG $GITHUB_REPO $PROJECT
-        else
-            git clone $GITHUB_REPO $PROJECT
-        fi
-    fi
-}
-
 case "$1" in
-    start|run)
-        if [ ! -f "$DOCKER_COMPOSE_FILE" ]; then
+    build)
         buildDockerComposeFile
         selectAddOns
-        fi
-        cloneFromGithubIfNeeded
-        $DOCKER_COMPOSE -p "$PROJECT" stop
-        $DOCKER_COMPOSE -p "$PROJECT" up
-        rm -rf images/back/tmp
-    ;;
-
-    rebuild)
-        $DOCKER_COMPOSE -p "$PROJECT" down
-        if [ -f "docker-compose.yml" ]; then
-            rm docker-compose.yml
-        fi
-        buildDockerComposeFile
-        selectAddOns
-        cloneFromGithubIfNeeded
-        $DOCKER_COMPOSE -p "$PROJECT" up --build
-        rm -rf images/back/tmp
-    ;;
-    stop)
-        $DOCKER_COMPOSE -p "$PROJECT" down
+        cat "Este es el docker file generado para llevar al repositorio del proyecto. \n"
+        cat "======================================================================== \n"
+        cat docker-compose.yml
+        cat "======================================================================== \n"
     ;;
 esac
 
